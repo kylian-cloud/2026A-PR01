@@ -49,10 +49,10 @@ def create_platform(x, y, platform_type):
         "height": PLATFORM_SIZE[1] 
     } 
 
-    if  platform_type == "blue":
-       platform["vx"] = MOVING_PLATFORM_SPEED
+    if platform_type == "blue":
+        platform["vx"] = MOVING_PLATFORM_SPEED
     if platform_type == "spring":
-        platform["y"] += 10
+        platform["height"] += 10
            # TODO
     
     # TODO : Modifiez le dictionnaire ci-dessus pour qu'il dépende réellement
@@ -70,7 +70,6 @@ def create_platform(x, y, platform_type):
 
 
 # ======================== PARTIE 2.2 ========================
-import random
 def choose_platform_type(green_probability, blue_probability, spring_probability):
     """
     Choisit aléatoirement un type de plateforme.
@@ -86,9 +85,6 @@ def choose_platform_type(green_probability, blue_probability, spring_probability
     #
     # Attention : les seuils utilisés avec random.random() doivent être
     # cumulatifs.
-    green_probability= 0.64
-    blue_probability=0.17
-    spring_probability=0.1
     r = random.random()
     if r < green_probability:
         return "green"

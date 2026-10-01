@@ -73,14 +73,13 @@ def move_platforms():
     # TODO : Parcourez les plateformes et gérez le déplacement des plateformes
     # bleues encore actives. Elles doivent rester dans la fenêtre en inversant
     # leur vitesse lorsqu'elles atteignent un bord
-    global PLATFORMS
     for platform in PLATFORMS:
-     if platform["type"]=="blue":
-        platform["x"]+=platform["vx"]
-        if platform["x"]+PLATFORM_WIDTH >= SCREEN_WIDTH:
-            platform["vx"] = -platform["vx"]
-        elif platform["x"]  <= 0:
-            platform["vx"]  = -platform["vx"]
+        if platform["type"] == "blue" and platform["active"]:
+            platform["x"] += platform["vx"]
+            if platform["x"] + platform["width"] >= SCREEN_WIDTH:
+                platform["vx"] = -platform["vx"]
+            elif platform["x"] <= 0:
+                platform["vx"] = -platform["vx"]
     return 
 
 # ===========================================================
@@ -121,7 +120,7 @@ def check_platform_collisions():
                         p["active"] = False
                     elif p["type"] == "green" or p["type"] == "blue":
                         doodle_dict["vel_y"] = JUMP_VELOCITY
-                break
+                    break
                         
 
 
@@ -156,7 +155,7 @@ def scroll_camera():
             platform["y"] += scroll_distance
 
         # 3. Met à jour le score et le meilleur score
-        doodle_dict["score"] += int(scroll_distance)
+        doodle_dict["score"] += scroll_distance
         high_score = doodle_dict.get("high_score", 0)
         if doodle_dict["score"] > high_score:
             doodle_dict["high_score"] = doodle_dict["score"]
@@ -166,7 +165,7 @@ def scroll_camera():
         PLATFORMS[:] = [p for p in PLATFORMS if p["y"] < SCREEN_HEIGHT]
 
         # 5. Génère de nouvelles plateformes en haut de l'écran
-        scroll_camera()
+        generate_new_platforms()
 
     
     return
@@ -186,8 +185,12 @@ def generate_new_platforms():
     # Vous devrez partir de la plateforme actuellement la plus haute et
     # continuer à ajouter des plateformes tant que nécessaire. Utilisez
     # choose_platform_type(...) avec les probabilités indiquées dans le README.
-    highest_platform = min(PLATFORMS, key=lambda p: p['y'])
-    current_y = highest_platform['y']
+    # 1. Point de départ : la plateforme la plus haute (ou le bas de l'écran si la liste est vide)
+    if len(PLATFORMS) == 0:
+        current_y = SCREEN_HEIGHT
+    else:
+        highest_platform = min(PLATFORMS, key=lambda p: p['y'])
+        current_y = highest_platform['y']
 
     # 2. Continue d'ajouter des plateformes tant qu'on n'a pas dépassé une marge au-dessus de l'écran
     while current_y > -100:  # Marge au-dessus du haut de l'écran (y = 0)
@@ -196,17 +199,13 @@ def generate_new_platforms():
         current_y -= gap_y
 
         # Position X aléatoire pour la plateforme
-        x = random.randint(PLATFORM_WIDTH, SCREEN_WIDTH  - PLATFORM_WIDTH)
+        x = random.randint(0, SCREEN_WIDTH - PLATFORM_WIDTH)
 
         # Choisit le type de plateforme via la fonction recommandée
-        p_type = choose_platform_type()
+        p_type = choose_platform_type(0.55, 0.20, 0.13)
 
         # Crée et ajoute la nouvelle plateforme
-        new_platform = {
-            'x': x,
-            'y': current_y,
-            'type': p_type,
-        }
+        new_platform = create_platform(x, current_y, p_type)
         PLATFORMS.append(new_platform)
 
     
