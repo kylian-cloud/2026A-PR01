@@ -157,9 +157,10 @@ def scroll_camera():
 
         # 3. Met à jour le score et le meilleur score
         doodle_dict["score"] += int(scroll_distance)
-        high_score = 0  # Assurez-vous que high_score est défini quelque part dans votre code
+        high_score = doodle_dict.get("high_score", 0)
         if doodle_dict["score"] > high_score:
-         high_score = doodle_dict["score"]
+            doodle_dict["high_score"] = doodle_dict["score"]
+        
 
         # 4. Supprime les plateformes qui sortent par le bas de l'écran
         PLATFORMS[:] = [p for p in PLATFORMS if p["y"] < SCREEN_HEIGHT]
